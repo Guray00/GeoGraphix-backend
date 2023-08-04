@@ -1,0 +1,47 @@
+
+function getCurrentFormattedDate() {
+	const date = new Date();
+  
+	const year = date.getUTCFullYear();
+	const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+	const day = String(date.getUTCDate()).padStart(2, '0');
+	const hours = String(date.getUTCHours()).padStart(2, '0');
+	const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+	const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+	const milliseconds = String(date.getUTCMilliseconds()).padStart(3, '0');
+  
+	const timezoneOffset = date.getTimezoneOffset();
+	const timezoneOffsetSign = timezoneOffset > 0 ? '-' : '+';
+	const timezoneHours = String(Math.abs(timezoneOffset / 60)).padStart(2, '0');
+	const timezoneMinutes = String(Math.abs(timezoneOffset % 60)).padStart(2, '0');
+  
+	const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}${timezoneOffsetSign}${timezoneHours}${timezoneMinutes}`;
+  
+	return formattedDate;
+  }
+
+
+function getTimestamp(dateTimeString) {
+	// Rimuovi l'apice singolo finale e separa il timestamp dalla parte di fuso orario
+	const [dateTimePart, timezonePart] = dateTimeString.slice(0, -1).split(' ');
+  
+	// Converti la parte di data e ora in un oggetto Date
+	const dateObject = new Date(dateTimePart + 'Z'); // Aggiungi 'Z' per indicare che è in formato UTC
+  
+	// Estrai i millisecondi dalla parte di ora e aggiungili all'oggetto Date
+	const millisecondsPart = parseInt(timezonePart.slice(4));
+	dateObject.setMilliseconds(millisecondsPart);
+  
+	// Restituisci il timestamp in millisecondi
+	return dateObject.getTime();
+}
+
+function isTimestampWithinPeriod(validTime, mperiod) {
+	const currentTimestamp = Date.now();
+	const timestamp = getTimestamp(validTime);
+
+	const lowerBound = currentTimestamp - mperiod;
+	const upperBound = currentTimestamp + mperiod;
+  
+	return timestamp >= lowerBound && timestamp <= upperBound;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "geographix-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"serve": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Guray00/GeoGraphix-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Guray00/GeoGraphix-backend/issues"
+  },
+  "homepage": "https://github.com/Guray00/GeoGraphix-backend#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
