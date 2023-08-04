@@ -26,3 +26,16 @@ app.get(host+'/getNodes', async (req, res) => {
 	// send data
 	res.send(nodes);
 });
+
+// get the informations of a single node
+app.get(host+'/getNodeInfo', async (req, res) => {
+	
+	const scode  = req.query.scode.trim();
+
+	// retrive of data
+	const nodes = await retrive.getNodeInfo(scode);
+	
+	// send data
+	res.send(nodes);
+});
+

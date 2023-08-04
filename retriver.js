@@ -41,6 +41,7 @@ const getNodes = async(municipality) => {
 		'scoordinate',
 		'mvalidtime',
 		'mperiod',
+		'scode',
 	];
 
 	// conditionals
@@ -68,6 +69,7 @@ const getNodes = async(municipality) => {
 				mvalue: node['mvalue'],
 				x: node['scoordinate'].x,
 				y: node['scoordinate'].y,
+				scode: node['scode'],
 			}
 
 			return result;
@@ -75,7 +77,53 @@ const getNodes = async(municipality) => {
 	});
 }
 
+// get node info by scode
+const getNodeInfo = async(scode) => {
+
+	// attributes to select
+	let attributes = [
+		'smetadata.name_en',
+		'smetadata.capacity',
+		'mvalue',
+		'scoordinate',
+		'mvalidtime',
+		'mperiod',
+		'scode',
+	];
+	
+	console.log(scode);
+
+	// conditionals
+	let where = [
+		'stype.eq.ParkingStation', 	// is a parking station
+		'tname.eq.free',      		// is free	
+		'scode.eq."'+scode+'"',			// is the requested node
+	];
+	
+	const query = SERVER_URL + 'limit=-1&select='+attributes.join(",")+"&where="+where.join(",");
+	console.log(query);
+		
+	return getJson(fetch(query, { method: 'GET'})).then(json =>{
+
+		return json.data.map((node) => {
+			
+			// remapping of attributes
+			const result = {
+				name_en: node['smetadata.name_en'],
+				capacity: node['smetadata.capacity'],
+				mvalue: node['mvalue'],
+				x: node['scoordinate'].x,
+				y: node['scoordinate'].y,
+				scode: node['scode'],
+			}
+
+			return result;
+		})[0]	
+	});
+}
+
+
 
 module.exports = {
-	getNodes
+	getNodes, getNodeInfo
 };
