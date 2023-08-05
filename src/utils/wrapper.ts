@@ -15,7 +15,7 @@ async function getJson(httpResponsePromise: Promise<Response>): Promise<any> {
 
 // wrapper for select and where and limit
 const getAllElements = async(SERVER_URL:string, type: String[], select:any[], where:any[], limit?:number): Promise<any> => {
-  const query = SERVER_URL + type.join(",")+"/latest?"+(limit ? "limit="+limit : "limit=-1") + (select ? '&select=' + select.join(",") : "") + (where ? "&where=" + where.join(",") : "");
+  const query = SERVER_URL + type.join(",")+"/latest?"+(limit ? "limit="+limit : "limit=-1") + (select ? '&select=' + select.join(",") : "") + (where.length > 0 ? "&where=" + where.join(",") : "");
   console.log(query);
   
   const json = await getJson(fetch(query, { method: 'GET' }));

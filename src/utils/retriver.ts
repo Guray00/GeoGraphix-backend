@@ -1,11 +1,8 @@
 // open hub api link
-const SERVER_URL = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/*/latest?';
-const SERVER_URL2 = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/';
+const SERVER_URL 	  = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/*/latest?';
+const SERVER_URL2 	  = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/';
 
 import {getAllElements, getElement, getElementsInInterval} from './wrapper'
-
-const CHARGINGSTATION = 'https://mobility.api.opendatahub.com/v2/flat/EChargingPlug';
-
 interface NodeInfo {
   name_en: string;
   capacity: number;
@@ -20,7 +17,7 @@ interface NodeTimeInfo {
 	mvalidtime: string;
 }
 
-
+/*
 // funzione di utility per la gestione di un json
 async function getJson(httpResponsePromise: Promise<Response>): Promise<any> {
   try {
@@ -34,6 +31,8 @@ async function getJson(httpResponsePromise: Promise<Response>): Promise<any> {
     throw { error: "Impossibile comunicare" };
   }
 }
+*/
+
 
 // get list of nodes
 const getNodes = async (municipality?: string): Promise<NodeInfo[]> => {
@@ -125,16 +124,13 @@ const getTodayTraffic = async (scode: string): Promise<any> => {
   	const tomorrow = new Date(today);
   	tomorrow.setDate(today.getDate() + 1);
 	  
-	//const fromTo = {
 	let from = today.toISOString().slice(0, 10);
 	let to	 = tomorrow.toISOString().slice(0, 10);
-	
 	
 	// conditionals
 	const where = [
 		'scode.eq."' + scode + '"',   // is the requested node
 	];
-
 	
 	let result = await getElementsInInterval(SERVER_URL2, ['free'], attributes, where, from, to, -1);
 }

@@ -1,6 +1,7 @@
 import express, { Application, Request, Response } from 'express';
 
 import {getNodes, getNodeInfo, getTodayTraffic} from './utils/retriver'
+import {getEcharges} from './utils/echarge';
 //import {prisma} from './utils/prisma'
 
 const app:Application 	= express();
@@ -55,6 +56,18 @@ app.get(host+'/parking/chart/dayly/cars', async (req, res) => {
 
 	// retrive of data
 	const nodes = await getTodayTraffic(scode.trim());
+	
+	// send data
+	res.send(nodes);
+});
+
+// ====
+
+
+app.get(host+'/echarges', async (req, res) => {
+	
+	// retrive of data
+	const nodes = await getEcharges();
 	
 	// send data
 	res.send(nodes);
