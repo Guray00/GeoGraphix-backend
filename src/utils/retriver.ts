@@ -5,6 +5,8 @@ const app = express();
 // open hub api link
 const SERVER_URL = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/*/latest?';
 
+const CHARGINGSTATION = 'https://mobility.api.opendatahub.com/v2/flat/EChargingPlug';
+
 interface NodeInfo {
   name_en: string;
   capacity: number;
