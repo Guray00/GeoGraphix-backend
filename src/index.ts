@@ -1,10 +1,11 @@
-import express from 'express';
-import {getNodes, getNodeInfo} from './utils/retriver'
-import {prisma} from './utils/prisma'
+import express, { Application, Request, Response } from 'express';
 
-const app = express();
-const port 	= 3001;
-const host 	= "/api"
+import {getNodes, getNodeInfo} from './utils/retriver'
+//import {prisma} from './utils/prisma'
+
+const app:Application 	= express();
+const port:number		= 3001;
+const host:string	 	= "/api"
 
 // attivazione del server
 app.listen(port, () => {
@@ -14,12 +15,13 @@ app.listen(port, () => {
 // necessario per le richieste POST
 app.use(express.json());
 
-app.get("/", (req, res) => {
-	console.log(prisma.user.findMany(({select: {id: true, name: true}})));
+app.get("/", async(req: Request, res: Response) => {
+	//console.log(await prisma.user.findMany(({select: {id: true, name: true}})));
 	res.send("Hello World!");
 });
 
 // retrive the total informations of nodes
+
 app.get(host+'/getNodes', async (req, res) => {
 	
 	// retriving the requested municipality
@@ -36,7 +38,6 @@ app.get(host+'/getNodes', async (req, res) => {
 // get the informations of a single node
 app.get(host+'/getNodeInfo', async (req, res) => {
 	
-
 	//api?scode=105
 	const scode:string = req.query.scode! as string;
 	//const   = req.query.scode!.trim();
