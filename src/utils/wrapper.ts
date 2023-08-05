@@ -35,7 +35,7 @@ const getElement = async(SERVER_URL:string, type: String[], select:any[], scode:
 }
 
 const getElementsInInterval = async(SERVER_URL:string, type: String[], select:any[], where:any[], from:string, to: string, limit?:number): Promise<any> => {
-	const query = SERVER_URL + from+ "/" + to + "/" + type.join(",")+"/latest?"+(limit ? "limit="+limit : "limit=-1") + (select ? '&select=' + select.join(",") : "") + (where ? "&where=" + where.join(",") : "");
+	const query = SERVER_URL + type.join(",") + "/"   + from+ "/" + to +"/?"+(limit ? "limit="+limit : "limit=-1") + (select ? '&select=' + select.join(",") : "") + (where ? "&where=" + where.join(",") : "");
   	console.log(query);
   
   	const json = await getJson(fetch(query, { method: 'GET' }));

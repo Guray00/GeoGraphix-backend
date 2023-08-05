@@ -1,6 +1,7 @@
 // open hub api link
 const SERVER_URL 	  = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/*/latest?';
 const SERVER_URL2 	  = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/';
+const SERVER_URL3 	  = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/';
 
 import {getAllElements, getElement, getElementsInInterval} from './wrapper'
 interface NodeInfo {
@@ -133,6 +134,16 @@ const getTodayTraffic = async (scode: string): Promise<any> => {
 	];
 	
 	let result = await getElementsInInterval(SERVER_URL2, ['free'], attributes, where, from, to, -1);
+	
+	let values:any[] = [];
+	let times:any[] = [];
+	
+	for (let x of result.data) {
+		values.push(x['mvalue']);
+		times.push(x['mvalidtime']);
+	}
+	
+	return {values, times};
 }
 
 
