@@ -1,6 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 
-import {getNodes, getNodeInfo} from './utils/retriver'
+import {getNodes, getNodeInfo, getTodayTraffic} from './utils/retriver'
 //import {prisma} from './utils/prisma'
 
 const app:Application 	= express();
@@ -22,7 +22,7 @@ app.get("/", async(req: Request, res: Response) => {
 
 // retrive the total informations of nodes
 
-app.get(host+'/getNodes', async (req, res) => {
+app.get(host+'/city/parkings', async (req, res) => {
 	
 	// retriving the requested municipality
 	const municipality:string = req.query.municipality! as string;
@@ -36,15 +36,25 @@ app.get(host+'/getNodes', async (req, res) => {
 });
 
 // get the informations of a single node
-app.get(host+'/getNodeInfo', async (req, res) => {
+app.get(host+'/parking', async (req, res) => {
 	
 	//api?scode=105
 	const scode:string = req.query.scode! as string;
-	//const   = req.query.scode!.trim();
-	
 
 	// retrive of data
 	const nodes = await getNodeInfo(scode.trim());
+	
+	// send data
+	res.send(nodes);
+});
+
+// 
+app.get(host+'/parking/chart/dayly/cars', async (req, res) => {
+	
+	const scode:string = req.query.scode! as string;
+
+	// retrive of data
+	const nodes = await getTodayTraffic(scode.trim());
 	
 	// send data
 	res.send(nodes);

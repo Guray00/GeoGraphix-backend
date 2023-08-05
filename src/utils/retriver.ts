@@ -1,9 +1,8 @@
-import express from 'express';
-
-const app = express();
-
 // open hub api link
 const SERVER_URL = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/*/latest?';
+const SERVER_URL2 = 'https://mobility.api.opendatahub.com/v2/flat,node/ParkingStation/';
+
+import {getAllElements, getElement, getElementsInInterval} from './wrapper'
 
 const CHARGINGSTATION = 'https://mobility.api.opendatahub.com/v2/flat/EChargingPlug';
 
@@ -15,6 +14,12 @@ interface NodeInfo {
   y: number;
   scode: string;
 }
+
+interface NodeTimeInfo {
+	mvalue: number;
+	mvalidtime: string;
+}
+
 
 // funzione di utility per la gestione di un json
 async function getJson(httpResponsePromise: Promise<Response>): Promise<any> {
@@ -33,45 +38,39 @@ async function getJson(httpResponsePromise: Promise<Response>): Promise<any> {
 // get list of nodes
 const getNodes = async (municipality?: string): Promise<NodeInfo[]> => {
   // attributes to select
-  const attributes = [
+ 	const attributes = [
     'smetadata.name_en',
     'smetadata.capacity',
     'mvalue',
     'scoordinate',
-    'mvalidtime',
-    'mperiod',
+    //'mvalidtime',
+    //'mperiod',
     'scode',
-  ];
+  	];
 
-  // conditionals
-  const where = [
-    'stype.eq.ParkingStation',   // is a parking station
-    'tname.eq.free',             // is free	
-  ];
+  	// conditionals
+  	const where = [
+  	];
 
-  // needed to filter by municipality
-  if (municipality) {
-    where.push('smetadata.municipality.eq.' + municipality);
-  }
+  	// needed to filter by municipality
+  	if (municipality) {
+    	where.push('smetadata.municipality.eq.' + municipality);
+  	}
 
-  const query = SERVER_URL + 'limit=-1&select=' + attributes.join(",") + "&where=" + where.join(",");
-  console.log(query);
-
-  const json = await getJson(fetch(query, { method: 'GET' }));
-
-  return json.data.map((node: any) => {
-    // remapping of attributes
-    const result: NodeInfo = {
-      name_en: node['smetadata.name_en'],
-      capacity: node['smetadata.capacity'],
-      mvalue: node['mvalue'],
-      x: node['scoordinate'].x,
-      y: node['scoordinate'].y,
-      scode: node['scode'],
-    };
-
-    return result;
-  });
+	let result = await getAllElements(SERVER_URL2, ['free'], attributes, where, -1);
+    
+	result = result.data.map((node: any) => {
+		return {
+			name_en: node['smetadata.name_en'],
+			capacity: node['smetadata.capacity'],
+			mvalue: node['mvalue'],
+			x: node['scoordinate'].x,
+			y: node['scoordinate'].y,
+			scode: node['scode'],
+		};
+	});
+	
+	return result;
 };
 
 // get node info by scode
@@ -89,17 +88,10 @@ const getNodeInfo = async (scode: string): Promise<NodeInfo | null> => {
 
   // conditionals
   const where = [
-    'stype.eq.ParkingStation',   // is a parking station
-    'tname.eq.free',             // is free	
     'scode.eq."' + scode + '"',   // is the requested node
   ];
 
-  const query = SERVER_URL + 'limit=-1&select=' + attributes.join(",") + "&where=" + where.join(",");
-  console.log(query);
-
-  const json = await getJson(fetch(query, { method: 'GET' }));
-
-  const node = json.data[0];
+  let node = await getElement(SERVER_URL2, ['free'], attributes, scode, -1);
 
   if (!node) {
     return null;
@@ -107,7 +99,7 @@ const getNodeInfo = async (scode: string): Promise<NodeInfo | null> => {
 
   // remapping of attributes
   const result: NodeInfo = {
-    name_en: node['smetadata.name_en'],
+	name_en: node['smetadata.name_en'],
     capacity: node['smetadata.capacity'],
     mvalue: node['mvalue'],
     x: node['scoordinate'].x,
@@ -118,7 +110,38 @@ const getNodeInfo = async (scode: string): Promise<NodeInfo | null> => {
   return result;
 };
 
+
+
+const getTodayTraffic = async (scode: string): Promise<any> => {
+
+	// attributes to select
+	const attributes = [
+		'mvalue',
+		'mvalidtime',
+	];
+
+	//YYYY-MM-DDTHH:mm:ss.sssZ
+	const today = new Date();
+  	const tomorrow = new Date(today);
+  	tomorrow.setDate(today.getDate() + 1);
+	  
+	//const fromTo = {
+	let from = today.toISOString().slice(0, 10);
+	let to	 = tomorrow.toISOString().slice(0, 10);
+	
+	
+	// conditionals
+	const where = [
+		'scode.eq."' + scode + '"',   // is the requested node
+	];
+
+	
+	let result = await getElementsInInterval(SERVER_URL2, ['free'], attributes, where, from, to, -1);
+}
+
+
 export {
   getNodes,
-  getNodeInfo
+  getNodeInfo,
+  getTodayTraffic,
 };
